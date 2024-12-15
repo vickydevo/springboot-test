@@ -1,21 +1,26 @@
-# Use the official OpenJDK 17 image as the base image
-FROM openjdk:17-jdk-slim
+# Use openjdk as the base image
+FROM openjdk:24-slim-bullseye
 
 # Set the maintainer
 LABEL maintainer="Your Name <your.email@example.com>"
 
+RUN  apt update -y \ 
+    && apt install -y maven
+
+RUN useradd -ms /bin/bash devopsuser \
+    && echo "devopsuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER devopsuser 
 # Set the working directory
-WORKDIR /opt
+WORKDIR /home/devopsuser 
+
 
 # Install Maven and other dependencies
-RUN apt update && \
-    apt install -y maven && \
-    apt clean
-
-
+ 
+    
 
 # Copy all files from the Spring Boot app directory to the container
-COPY . /opt
+COPY . .
 
 # Run multiple commands
 RUN mvn clean package
@@ -24,8 +29,7 @@ RUN mvn clean package
 #COPY target/your-app.jar /opt/
 
 # Set the entry point to run the Java application
-ENTRYPOINT [ "java", "-jar", "/opt/target/gs-spring-boot-0.1.0.jar" ]
-
+ENTRYPOINT [ "java", "-jar", "./target/gs-spring-boot-0.1.0.jar" ]
 
 
 # # Stage 1: Build the application
