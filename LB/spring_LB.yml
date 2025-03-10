@@ -2,18 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-deployment
+  name: springboot-deployment_LB
   labels:
-    app: spring
+    app: spring_LB
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: spring
+      app: spring_LB
   template:
     metadata:
       labels:
-        app: spring
+        app: spring_LB
     spec:
       containers:
       - name: springboot
@@ -31,14 +31,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-service
+  name: spring-service_LB
   labels:
     app: spring
 spec:
   type: LoadBalancer
   selector:
-    app: spring
+    app: spring_LB
   ports:
     - protocol: TCP
       port: 8081
-      targetPort: 8081
+      targetPort: 8083
