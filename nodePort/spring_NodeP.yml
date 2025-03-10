@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-deployment_np
+  name: springboot-deployment-np
   labels:
     app: spring
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: spring_np
+      app: spring-np
   template:
     metadata:
       labels:
-        app: spring_np
+        app: spring-np
     spec:
       containers:
       - name: springboot
-        image: vignan91/java_spring:8081
+        image: vignan91/java-spring:8081
         ports:
         - containerPort: 8081
         resources:
@@ -31,13 +31,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-svc_np
+  name: spring-svc-np
   labels:
-    app: spring_np
+    app: spring-np
 spec:
   type: NodePort
   selector:
-    app: spring_np
+    app: spring-np
   ports:
     - protocol: TCP
       port: 8081

@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-deployment_lb
+  name: springboot-deployment-lb
   labels:
-    app: spring_lb
+    app: spring-lb
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: spring_lb
+      app: spring-lb
   template:
     metadata:
       labels:
-        app: spring_lb
+        app: spring-lb
     spec:
       containers:
       - name: springboot
-        image: vignan91/java_spring:8081
+        image: vignan91/java-spring:8081
         ports:
         - containerPort: 8081
         resources:
@@ -31,13 +31,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-service_lb
+  name: spring-service-lb
   labels:
     app: spring
 spec:
   type: LoadBalancer
   selector:
-    app: spring_lb
+    app: spring-lb
   ports:
     - protocol: TCP
       port: 8081
