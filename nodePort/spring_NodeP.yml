@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-deployment_NP
+  name: springboot-deployment_np
   labels:
     app: spring
 spec:
