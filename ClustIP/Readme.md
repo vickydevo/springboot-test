@@ -14,7 +14,9 @@ If you have a running pod that already includes utilities such as `curl` or `wge
 2. Execute the following command (replace `<pod-name>` with the actual pod name):
 
    ```bash
-   kubectl exec -it <pod-name> -- curl http://spring-service:8081
+   kubectl get pods
+   kubectl exec -it <pod-name> -- /bin/bash
+   curl http://spring-service:8081
 This command sends a request to the ClusterIP service (spring-service) on port 8081 from within the cluster.
 
 ## 2. Testing by Creating a Temporary Pod
