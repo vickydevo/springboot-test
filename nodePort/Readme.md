@@ -32,3 +32,12 @@ You should see an output similar to:
 NAME             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 spring-svc-np    NodePort   10.101.40.189   <none>        8081:30037/TCP   5m
 ```
+
+## Minikube Specifics:
+
+When using minikube, the cluster’s internal IP (10.106.252.54) isn’t reachable from outside. Instead, run:
+```bash
+minikube ip
+to get the minikube VM’s IP. For example, if it returns 192.168.49.2, then you should access your service at:
+```bash 
+curl http://192.168.49.2:30037
