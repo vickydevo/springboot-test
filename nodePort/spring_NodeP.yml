@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: springboot-deployment-np
   labels:
-    app: spring
+    app: spring-np
 spec:
   replicas: 3
   selector:
