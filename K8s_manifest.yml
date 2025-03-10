@@ -42,7 +42,7 @@ spec:
     - protocol: TCP
       port: 8081
       targetPort: 8081
-      nodePort: 30036  # Optional, specify a port in the 30000-32767 range
+      nodePort: 30036  # Optional, specify a port in the 30000-32767 range 
 
 
 # for Wsl
