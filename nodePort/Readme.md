@@ -9,7 +9,7 @@ This guide explains how to expose your Kubernetes application externally using a
 - **Kubernetes Cluster:** Ensure you have a running Kubernetes cluster (e.g., on an EC2 instance).
 - **Deployment & NodePort Service:** Your application is deployed with a Deployment and exposed via a NodePort Service.
 - **YAML Configuration:** The NodePort service is configured to use:
-  - **Service Port:** `8081`
+  - **Service Port:** `8082`
   - **Container Port:** `8081`
   - **NodePort:** `30037`
 - **External Access:** Your EC2 instance (or Kubernetes node) has a public IP address, and necessary firewall rules/security groups allow traffic on port `30037`.
