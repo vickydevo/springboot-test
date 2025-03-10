@@ -17,30 +17,30 @@ If you have a running pod that already includes utilities such as `curl` or `wge
    kubectl exec -it <pod-name> -- curl http://spring-service:8081
 This command sends a request to the ClusterIP service (spring-service) on port 8081 from within the cluster.
 
-2. Testing by Creating a Temporary Pod
+## 2. Testing by Creating a Temporary Pod
 If none of your existing pods have the required tools, you can create a temporary pod that includes them.
 
 Option A: Using Busybox (with wget)
 Run a temporary pod using the Busybox image:
-bash
-Copy
-Edit
+```bash
+
 kubectl run temp-test --rm -it --image=busybox --restart=Never -- sh
+```
 Once inside the pod, execute:
-sh
-Copy
-Edit
+```sh
+
 wget -qO- http://spring-service:8081
+```
 This command fetches the output from the ClusterIP service.
 Option B: Using curlimages/curl (with curl)
-Run a temporary pod using the curlimages/curl image:
-bash
-Copy
-Edit
+## Run a temporary pod using the curlimages/curl image:
+```bash
+
 kubectl run temp-curl --rm -it --image=curlimages/curl --restart=Never -- sh
+```
 Once inside the pod, execute:
-sh
-Copy
-Edit
+```sh
+
 curl http://spring-service:8081
-This command sends a request to the ClusterIP service using curl.
+```
+## This command sends a request to the ClusterIP service using curl.
