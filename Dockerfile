@@ -20,10 +20,10 @@ WORKDIR /home/devopsuser
     
 
 # Copy all files from the Spring Boot app directory to the container
-COPY ./pom.xml .
+COPY . .
 
 # Run multiple commands
-RUN mvn clean package
+RUN sudo mvn clean package
 
 # Copy the newly created JAR file to the current directory
 #COPY target/your-app.jar /opt/
