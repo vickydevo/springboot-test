@@ -38,6 +38,7 @@ pipeline {
                     echo "     $(pwd)       "
                     echo "######################################"
                 mvn clean verify
+                pwd 
                 '''
             }
         } // stage 5
