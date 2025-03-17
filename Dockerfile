@@ -7,7 +7,9 @@ LABEL maintainer="Your Name <your.email@example.com>"
 RUN  apt update -y \ 
     && apt install -y maven
 
-RUN useradd -ms /bin/bash devopsuser \
+RUN useradd -ms /bin/bash devopsuser 
+# Change ownership of the working directory
+RUN chown -R devopsuser:devopsuser /home/devopsuser \
     && echo "devopsuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER devopsuser 
@@ -23,7 +25,7 @@ WORKDIR /home/devopsuser
 COPY . .
 
 # Run multiple commands
-RUN sudo mvn clean package
+RUN  mvn clean package
 
 # Copy the newly created JAR file to the current directory
 #COPY target/your-app.jar /opt/
