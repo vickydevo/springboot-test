@@ -25,7 +25,7 @@ WORKDIR /home/devopsuser
 COPY . .
 
 # Run multiple commands
-RUN rm -rf /home/devopsuser/target && mvn clean package
+RUN  mvn  package
 
 # Copy the newly created JAR file to the current directory
 #COPY target/your-app.jar /opt/
