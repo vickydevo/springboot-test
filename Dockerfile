@@ -20,7 +20,7 @@ WORKDIR /home/devopsuser
     
 
 # Copy all files from the Spring Boot app directory to the container
-COPY ./springboot-test/pom.xml .
+COPY ./pom.xml .
 
 # Run multiple commands
 RUN mvn clean package
