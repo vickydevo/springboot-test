@@ -34,6 +34,9 @@ pipeline {
         stage ('Artifact to Nexus Repo') {
             steps {
                 sh '''
+                   echo "######################################"
+                    echo "     $(pwd)       "
+                    echo "######################################"
                 mvn clean verify
                 '''
             }
