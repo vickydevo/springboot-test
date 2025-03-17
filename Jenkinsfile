@@ -55,6 +55,9 @@ pipeline {
             steps {
                 sh '''
                 mvn clean validate
+                echo "######################################"
+                    echo "     $(pwd)       "
+                    echo "######################################"
                 '''
             }
         } // stage 7
