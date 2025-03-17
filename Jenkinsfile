@@ -3,29 +3,56 @@ pipeline {
     stages {
         stage ('GIT CHECKOUT') {
             steps {
-                git url:'https://github.com/vickydevo/springboot-hello.git', branch:'main'
+                git url:'https://github.com/vickydevo/springboot-test.git', branch:'main'
             }
         }// stage1
-        
-        stage ('MAVEN BUILD') {
+
+
+          stage ('Quality Gates') {
             steps {
                 sh '''
-                mvn clean install
+                mvn clean verfiy
                 '''
             }
         }//stage2 
+        stage ('SonarQube Analysis Gates') {
+            steps {
+                sh '''
+                mvn clean complie
+                '''
+            }
+        
+        stage ('MAVEN BUILD Artifact') {
+            steps {
+                sh '''
+                mvn clean package 
+                '''
+            }
+        }//stage2 
+        stage ('Artifact to Nexus Repo') {
+            steps {
+                sh '''
+                mvn clean verfiy
+                '''
+            }
         
         stage ('DOCKER BUILD') {
             steps {
                 sh '''
-                docker build -t spring-boot:v1 .
-                docker tag spring-boot:v1 vignan91/spring-boot:v1
+                docker build -t springboot-demo:v1 .
+                docker tag springboot-demo:v1 vignan91/springboot-demo:v1
                 echo "######################################"
                 echo "     DOCKER TAG IS COMPLETED             "
                 echo "######################################"
                 '''
             }
         }// stage3
+        stage ('Trivy Scan of Image') {
+            steps {
+                sh '''
+                mvn clean validate
+                '''
+            }
         
         stage ('DOCKER LOGIN PUSH') {
             steps {
@@ -35,7 +62,7 @@ pipeline {
                     echo "######################################"
                     echo "     DOCKER LOGIN IS COMPLETED             "
                     echo "######################################"
-                    docker push vignan91/spring-boot:v1
+                    docker push vignan91/springboot-demo:v1
                     echo "######################################"
                     echo "     DOCKER PUSH IS COMPLETED             "
                     echo "######################################"
@@ -47,7 +74,7 @@ pipeline {
         stage ('DOCKER RUN') {
             steps {
                 sh '''
-                docker run -d -p 8081:8080 --name spring-boot-container vignan91/spring-boot:v1
+                docker run -d -p 8081:8080 --name springboot-demo-container vignan91/springboot-demo:v1
                 echo "######################################"
                 echo "     DOCKER CONTAINER IS RUNNING ON PORT 8081             "
                 echo "######################################"
