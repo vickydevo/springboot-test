@@ -46,8 +46,8 @@ pipeline {
         stage ('DOCKER BUILD') {
             steps {
                 sh '''
-                docker build -t springboot-demo:v1 .
-                docker tag springboot-demo:v1 vignan91/springboot-demo:v1
+                docker build -t springboot-demo:v2 .
+                docker tag springboot-demo:v2 vignan91/springboot-demo:v2
                 echo "######################################"
                 echo "     DOCKER TAG IS COMPLETED         "
                 echo "######################################"
@@ -66,7 +66,7 @@ pipeline {
             }
         } // stage 7
 
-        stage ('DOCKER LOGIN PUSH') {
+        stage ('Image Push to Dockerhub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
@@ -74,7 +74,7 @@ pipeline {
                     echo "######################################"
                     echo "     DOCKER LOGIN IS COMPLETED       "
                     echo "######################################"
-                    docker push vignan91/springboot-demo:v1
+                    docker push vignan91/springboot-demo:v2
                     echo "######################################"
                     echo "     DOCKER PUSH IS COMPLETED        "
                     echo "######################################"
@@ -83,10 +83,10 @@ pipeline {
             }
         } // stage 8
 
-        stage ('DOCKER RUN') {
+        stage ('Deploy app to Container') {
             steps {
                 sh '''
-                docker run -d -p 8081:8080 --name springboot-demo-container vignan91/springboot-demo:v1
+                docker run -d -p 8082:8081 --name demo-container vignan91/springboot-demo:v2
                 echo "######################################"
                 echo "     DOCKER CONTAINER IS RUNNING ON PORT 8081 "
                 echo "######################################"
