@@ -7,25 +7,15 @@ LABEL maintainer="Your Name <your.email@example.com>"
 RUN  apt update -y \ 
     && apt install -y maven
 
-RUN useradd -ms /bin/bash devopsuser 
-# Change ownership of the working directory
-RUN chown -R devopsuser:devopsuser /home/devopsuser \
-    && echo "devopsuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-USER devopsuser 
-# Set the working directory
-WORKDIR /home/devopsuser 
-
-
+WORKDIR /opt
 # Install Maven and other dependencies
- 
     
 
 # Copy all files from the Spring Boot app directory to the container
 COPY . .
 
 # Run multiple commands
-RUN  mvn  package
+RUN  mvn  clean package
 
 # Copy the newly created JAR file to the current directory
 #COPY target/your-app.jar /opt/
