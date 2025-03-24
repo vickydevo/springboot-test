@@ -1,4 +1,4 @@
-# Deploy JAVA application spring-boot-hello in ec2 amazon linux/ubuntu instance..!!!
+# Deploy JAVA application spring-boot-hello in gitinstance..!!!
 
 ## Pre-requisites:
 
