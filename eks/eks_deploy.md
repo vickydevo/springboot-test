@@ -1,4 +1,4 @@
-# Deploying an EKS Cluster
+# Deploying an ubuntu of eks cluster
 
 ## Prerequisites
 1. **Create an IAM Role**
