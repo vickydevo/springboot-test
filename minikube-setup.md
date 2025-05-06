@@ -73,13 +73,49 @@ kubectl version --client --output=yaml
 ```bash
 sudo usermod -aG docker $USER && newgrp docker
 minikube start --driver=docker
+```
+**![Image](https://github.com/user-attachments/assets/f513eea3-79dd-49d3-beca-1c25e23fe1d9)**
+
+```bash
 minikube status
 ```
+**![Image](https://github.com/user-attachments/assets/29cb950f-b7e7-4e87-8e95-2e384d1b2c62)**
+ 
 
-### Step 8: Verify Kubernetes Resources
+### Step 8: Verify All Workloads Managed by Kubernetes
+
+To list all workloads managed by Kubernetes, including Deployments, StatefulSets, DaemonSets, ReplicaSets, Jobs, CronJobs, and Pods, run the following command:
+
 ```bash
 kubectl get all
 ```
+
+### Explicitly List All Workload Types
+
+To explicitly list all workload types with detailed information, use the following command:
+
+```bash
+kubectl get deployments,replicasets,jobs,cronjobs,pods,statefulsets,daemonsets
+kubectl get all --show-kind --output=wide
+```
+
+### Step 10: Access Kubernetes Dashboard
+Start the dashboard:
+```bash
+minikube dashboard
+```
+***![Image](https://github.com/user-attachments/assets/ba58d8b7-8537-440e-b0d3-c5c0b753dc93)***
+For external access, in another client/terminal  set up a proxy:
+```bash
+kubectl proxy --address='0.0.0.0' --accept-hosts='^*$'
+```
+**![Image](https://github.com/user-attachments/assets/a666d12b-a143-413a-b30e-c4b6812c897a)**
+
+Access the dashboard in your browser:
+```
+http://<your-ec2-public-ip>:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+```
+**![Image](https://github.com/user-attachments/assets/6d1c8d8e-cfac-43fe-b52f-6ae646e7e3b4)**
 
 ### Step 9: Port Forward and Access Application
 1. Get the name of the pods:
@@ -95,20 +131,8 @@ kubectl get all
   curl http://localhost:8081
   ```
 
-### Step 10: Access Kubernetes Dashboard
-Start the dashboard:
-```bash
-minikube dashboard
-```
 
-For external access, set up a proxy:
-```bash
-kubectl proxy --address='0.0.0.0' --accept-hosts='^*$'
-```
-Access the dashboard in your browser:
-```
-http://<your-ec2-public-ip>:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
-```
+
 
 ### Step 11: Deploy and Manage Applications
 - Apply a deployment:
