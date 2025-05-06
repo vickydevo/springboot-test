@@ -166,7 +166,7 @@ spec:
   ```bash
   kubectl apply -f nodeport-service.yml
   ```
-
+**![Image](https://github.com/user-attachments/assets/2ba8953c-665a-449d-87bd-a3cef5167e29)**
 3. Verify the deployment and service:
   ```bash
   kubectl get deployments
@@ -194,32 +194,34 @@ Since Minikube is running inside an EC2 instance, the NodePort service won't be 
   ```bash
   kubectl port-forward service/my-app-service 8080:80
   ```
+  **![Image](https://github.com/user-attachments/assets/f0f8c1a0-9007-4b27-bced-e4131f508468)**
 
 2. **Access the Service Locally on EC2**  
   Open a browser or use `curl` on the EC2 instance to access the service:
   ```bash
   curl http://localhost:8080
   ```
-
+**![Image](https://github.com/user-attachments/assets/1f54873e-b4fd-48b2-9088-a033a9f45cb6)**
 3. **Access the Service Externally**  
   To access the service from your local machine, set up an SSH tunnel to the EC2 instance:
   ```bash
   ssh -i <your-key.pem> -L 8080:localhost:8080 ec2-user@<your-ec2-public-ip>
   ```
-
+**![Image](https://github.com/user-attachments/assets/4dbf90a6-59c7-475d-98d5-634610d3d996)**
   Then, open your browser and navigate to:
   ```
   http://localhost:8080
+ 
   ```
-
+**![Image](https://github.com/user-attachments/assets/a6b8af38-f041-44ce-895b-09e782d14dce)**
 This setup allows you to access the NodePort service running inside Minikube on the EC2 instance from your local machine.
 
 
 Browser (local machine)
    ↓
-localhost:8080
+localhost:8081
    ↓ (via SSH tunnel)
-EC2 instance
+EC2 instance 8080
    ↓
 Minikube IP 192.168.49.2:30007
    ↓
