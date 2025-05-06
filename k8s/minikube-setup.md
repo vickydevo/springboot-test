@@ -234,40 +234,43 @@ Alternatively, you can expose the NodePort service using an SSH tunnel directly 
   ```
 
 This method allows you to directly access the NodePort service running inside Minikube from your local machine without additional port forwarding steps.
+### Request Workflow: Browser to NGINX Container
+
+The following diagram illustrates the request workflow from your local browser to the NGINX container running inside Kubernetes on Minikube:
+
+```
 Browser (local machine)
-   ↓
+  ↓
 localhost:8081
-   ↓ (via SSH tunnel)
+  ↓ (via SSH tunnel)
 EC2 instance 8080
-   ↓
+  ↓
 Minikube IP 192.168.49.2:30007
-   ↓
+  ↓
 NGINX container inside Kubernetes
-
-
-### Step 11: Deploy and Manage Applications
-- Apply a deployment:
-  ```bash
-  kubectl apply -f ./sample_deploy.yml
-  ```
-- Check deployment status:
-  ```bash
-  kubectl get deployment my-deployment
-  ```
-- View logs:
-  ```bash
-  kubectl logs <pod-name>
-  ```
-
-- Delete a deployment:
-  ```bash
-  kubectl delete -f ./sample_deploy.yml
-  ```
-
-### Cleanup
-To delete all resources:
-```bash
-kubectl delete -f ./sample_pod.yml
 ```
 
-You're now ready to use Minikube for your Kubernetes development needs!
+#### Steps to Access the NGINX Container:
+
+1. **Browser (Local Machine)**  
+  Open your browser and navigate to:
+  ```
+  http://localhost:8081
+  ```
+
+2. **SSH Tunnel to EC2 Instance**  
+  The request is forwarded via an SSH tunnel from your local machine to the EC2 instance:
+  ```bash
+  ssh -i private.pem -L 8081:192.168.49.2:30007 ubuntu@<your-ec2-public-ip>
+  ```
+
+3. **EC2 Instance Port Forwarding**  
+  On the EC2 instance, the request is forwarded from port `8080` to the Minikube IP and NodePort service (`192.168.49.2:30007`).
+
+4. **Minikube NodePort Service**  
+  Minikube routes the request to the NGINX container running inside the Kubernetes cluster.
+
+5. **NGINX Container**  
+  The NGINX container processes the request and returns the response, which is routed back to your browser through the same path.
+
+This setup ensures secure access to the NodePort service running inside Minikube from your local machine.
