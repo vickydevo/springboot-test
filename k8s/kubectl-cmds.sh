@@ -6,12 +6,16 @@ echo "## Basic Commands ##"
 # kubectl cluster-info
 # kubectl get all
 # kubectl version --short
+# kubectl config view
+# kubectl api-resources
 
 
 # Applying and Managing YAML Files
 echo "## Applying and Managing YAML Files ##"
 # kubectl apply -f <file-name>.yaml
 # kubectl delete -f <file-name>.yaml
+kubectl explain deployment
+# kubectl explain pod
 
 # Working with Namespaces
 echo "## Working with Namespaces ##"
