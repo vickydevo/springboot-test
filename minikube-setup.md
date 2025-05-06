@@ -5,6 +5,20 @@ This guide provides step-by-step instructions to set up Minikube on a Linux syst
 ## Prerequisites
 - Ensure you have `sudo` privileges on your system.
 - Install `curl` if not already installed.
+
+### Step 3: Install Required Packages
+```bash
+sudo yum install git maven docker java-17-amazon-corretto -y 
+sudo apt update && sudo apt install git maven docker.io openjdk-17-jdk -y
+```
+
+
+### Step 4: Start and Verify Docker Service
+```bash
+sudo systemctl start docker
+sudo systemctl status docker
+```
+
 ### Install Docker and Add User to Docker Group
 1. Install Docker:
   ```bash
@@ -30,16 +44,6 @@ rm minikube-linux-amd64
 minikube status
 ```
 
-### Step 3: Install Required Packages
-```bash
-sudo yum install git maven docker java-17-amazon-corretto -y
-```
-
-### Step 4: Start and Verify Docker Service
-```bash
-sudo systemctl start docker
-sudo systemctl status docker
-```
 
 ### Step 5: Install `kubectl`
 ```bash
@@ -71,7 +75,6 @@ kubectl version --client --output=yaml
 
 ### Step 7: Start Minikube with Docker Driver
 ```bash
-sudo usermod -aG docker $USER && newgrp docker
 minikube start --driver=docker
 ```
 **![Image](https://github.com/user-attachments/assets/f513eea3-79dd-49d3-beca-1c25e23fe1d9)**
@@ -79,7 +82,7 @@ minikube start --driver=docker
 ```bash
 minikube status
 ```
-**![Image](https://github.com/user-attachments/assets/29cb950f-b7e7-4e87-8e95-2e384d1b2c62)**
+***![Image](https://github.com/user-attachments/assets/29cb950f-b7e7-4e87-8e95-2e384d1b2c62)***
  
 
 ### Step 8: Verify All Workloads Managed by Kubernetes
