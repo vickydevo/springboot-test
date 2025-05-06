@@ -20,13 +20,6 @@ spec:
         image: vignan91/spring-test:8081
         ports:
         - containerPort: 8081
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "1024Mi"
-            cpu: "1000m"
 ---
 apiVersion: v1
 kind: Service

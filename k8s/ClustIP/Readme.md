@@ -1,48 +1,86 @@
 # Testing ClusterIP Services in Kubernetes
 
-ClusterIP services in Kubernetes are only accessible from within the cluster. This document describes two methods to test a ClusterIP service without using port-forwarding.
+ClusterIP services in Kubernetes are accessible only within the cluster. This guide outlines two methods to test a ClusterIP service without relying on port-forwarding.
 
 ---
 
-## 1. Testing Using an Existing Pod
+## Kubernetes Deployment and Service Configuration
 
-If you have a running pod that already includes utilities such as `curl` or `wget`, you can execute a command directly in that pod to test your service.
+### Deployment Configuration
 
-### Steps:
-1. Identify a pod that has the necessary tools.  
-   *If your pod doesn't have `curl` or `wget`, you may need to install them, or use another pod that has them installed.*
-2. Execute the following command (replace `<pod-name>` with the actual pod name):
-
-   ```bash
-   kubectl get pods
-   kubectl exec -it <pod-name> -- /bin/bash
-   curl http://spring-service:8081
-This command sends a request to the ClusterIP service (spring-service) on port 8081 from within the cluster.
-
-## 2. Testing by Creating a Temporary Pod
-If none of your existing pods have the required tools, you can create a temporary pod that includes them.
-
-Option A: Using Busybox (with wget)
-Run a temporary pod using the Busybox image:
-```bash
-
-kubectl run temp-test --rm -it --image=busybox --restart=Never -- sh
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: springboot-deployment
+   labels:
+      app: spring
+spec:
+   replicas: 3
+   selector:
+      matchLabels:
+         app: spring
+   template:
+      metadata:
+         labels:
+            app: spring
+      spec:
+         containers:
+         - name: springboot
+            image: vignan91/spring-test:8081
+            ports:
+            - containerPort: 8081
 ```
-Once inside the pod, execute:
-```sh
 
-wget -qO- http://spring-service:8081
-```
-This command fetches the output from the ClusterIP service.
-Option B: Using curlimages/curl (with curl)
-## Run a temporary pod using the curlimages/curl image:
-```bash
+### Service Configuration
 
-kubectl run temp-curl --rm -it --image=curlimages/curl --restart=Never -- sh
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+   name: spring-service
+   labels:
+      app: spring
+spec:
+   type: ClusterIP
+   selector:
+      app: spring
+   ports:
+      - protocol: TCP
+         port: 8081
+         targetPort: 8081
 ```
-Once inside the pod, execute:
-```sh
 
-curl http://spring-service:8081
-```
-## This command sends a request to the ClusterIP service using curl.
+---
+
+## Methods to Test ClusterIP Services
+
+### 1. Using an Existing Pod
+
+If you have a pod with utilities like `curl` or `wget`, you can directly use it to test the service.
+
+### 2. Executing into a Pod and Testing the Service
+
+If no utility pod is available, you can exec into an existing pod and use `curl` to test the service.
+
+#### Steps:
+
+1. Exec into a running pod:
+
+    ```bash
+    kubectl exec -it <pod-name> -- bash
+    ```
+
+    Example:
+
+    ```bash
+    kubectl exec -it springboot-deployment-67fbd7cdfd-2kb7m -- bash
+    ```
+
+2. Inside the pod, test the service:
+
+    ```bash
+    curl http://spring-service:8081
+    ```
+
+This confirms whether the service is accessible and discoverable within the cluster.
