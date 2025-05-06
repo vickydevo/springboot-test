@@ -126,39 +126,40 @@ To deploy an application using a manifest file with a NodePort service and acces
 
 1. Create a manifest file (e.g., `nodeport-service.yml`) with the following content:
   ```yaml
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: my-app
-  spec:
-    replicas: 1
-    selector:
-     matchLabels:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
       app: my-app
-    template:
-     metadata:
+  template:
+    metadata:
       labels:
         app: my-app
-     spec:
+    spec:
       containers:
       - name: my-app
         image: nginx
         ports:
         - containerPort: 80
-  ---
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: my-app-service
-  spec:
-    type: NodePort
-    selector:
-     app: my-app
-    ports:
-    - protocol: TCP
-     port: 80
-     targetPort: 80
-     nodePort: 30007
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  type: NodePort
+  selector:
+    app: my-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30007
+
   ```
 
 2. Apply the manifest file:
@@ -177,14 +178,52 @@ To deploy an application using a manifest file with a NodePort service and acces
     ```bash
     minikube ip
     ```
-  - Open the following URL in your browser:
+  - Open the following command in your in ec2 instance :
     ```
-    http://<minikube-ip>:30007
+    curl http://<minikube-ip>:30007
     ```
-
+**![Image](https://github.com/user-attachments/assets/502b37a2-beb0-4a48-96be-1c8b76bdd597)**
 You should see the default Nginx welcome page.
 
+### Step 9.1: Access NodePort Service on EC2 Instance
 
+Since Minikube is running inside an EC2 instance, the NodePort service won't be directly accessible via the EC2 public IP. Follow these steps to access the service:
+
+1. **Enable Port Forwarding on Minikube**  
+  Use the `kubectl port-forward` command to forward the NodePort service to a local port on the EC2 instance:
+  ```bash
+  kubectl port-forward service/my-app-service 8080:80
+  ```
+
+2. **Access the Service Locally on EC2**  
+  Open a browser or use `curl` on the EC2 instance to access the service:
+  ```bash
+  curl http://localhost:8080
+  ```
+
+3. **Access the Service Externally**  
+  To access the service from your local machine, set up an SSH tunnel to the EC2 instance:
+  ```bash
+  ssh -i <your-key.pem> -L 8080:localhost:8080 ec2-user@<your-ec2-public-ip>
+  ```
+
+  Then, open your browser and navigate to:
+  ```
+  http://localhost:8080
+  ```
+
+This setup allows you to access the NodePort service running inside Minikube on the EC2 instance from your local machine.
+
+
+Browser (local machine)
+   ↓
+localhost:8080
+   ↓ (via SSH tunnel)
+EC2 instance
+   ↓
+Minikube IP 192.168.49.2:30007
+   ↓
+NGINX container inside Kubernetes
 
 
 ### Step 11: Deploy and Manage Applications
@@ -200,6 +239,7 @@ You should see the default Nginx welcome page.
   ```bash
   kubectl logs <pod-name>
   ```
+
 - Delete a deployment:
   ```bash
   kubectl delete -f ./sample_deploy.yml
