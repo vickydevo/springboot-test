@@ -250,27 +250,4 @@ Minikube IP 192.168.49.2:30007
 NGINX container inside Kubernetes
 ```
 
-#### Steps to Access the NGINX Container:
-
-1. **Browser (Local Machine)**  
-  Open your browser and navigate to:
-  ```
-  http://localhost:8081
-  ```
-
-2. **SSH Tunnel to EC2 Instance**  
-  The request is forwarded via an SSH tunnel from your local machine to the EC2 instance:
-  ```bash
-  ssh -i private.pem -L 8081:192.168.49.2:30007 ubuntu@<your-ec2-public-ip>
-  ```
-
-3. **EC2 Instance Port Forwarding**  
-  On the EC2 instance, the request is forwarded from port `8080` to the Minikube IP and NodePort service (`192.168.49.2:30007`).
-
-4. **Minikube NodePort Service**  
-  Minikube routes the request to the NGINX container running inside the Kubernetes cluster.
-
-5. **NGINX Container**  
-  The NGINX container processes the request and returns the response, which is routed back to your browser through the same path.
-
 This setup ensures secure access to the NodePort service running inside Minikube from your local machine.
