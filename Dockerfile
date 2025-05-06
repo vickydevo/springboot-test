@@ -15,7 +15,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "target/gs-spring-boot-0.1.0.jar"]
