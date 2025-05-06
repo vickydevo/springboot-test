@@ -29,6 +29,15 @@ mkdir -p ~/.local/bin
 
 # Step 10: Move kubectl to the local bin directory
 mv ./kubectl ~/.local/bin/kubectl
+# Edit your shell profile file (.bashrc, .zshrc, or .profile):
+
+
+Edit
+nano ~/.bashrc
+
+# Add this line at the end:
+Edit
+export PATH="$HOME/.local/bin:$PATH"
 
 # Step 11: Verify kubectl installation
 kubectl version --client
