@@ -5,6 +5,16 @@ This guide provides step-by-step instructions to set up Minikube on a Linux syst
 ## Prerequisites
 - Ensure you have `sudo` privileges on your system.
 - Install `curl` if not already installed.
+### Install Docker and Add User to Docker Group
+1. Install Docker:
+  ```bash
+  sudo yum install docker -y && sudo usermod -aG docker $USER && newgrp docker
+  ```
+
+2. Verify Docker installation:
+  ```bash
+  docker --version
+  ```
 
 ## Steps
 
