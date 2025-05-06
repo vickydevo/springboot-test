@@ -216,7 +216,24 @@ Since Minikube is running inside an EC2 instance, the NodePort service won't be 
 **![Image](https://github.com/user-attachments/assets/a6b8af38-f041-44ce-895b-09e782d14dce)**
 This setup allows you to access the NodePort service running inside Minikube on the EC2 instance from your local machine.
 
+### Step 9.2: Access NodePort Service Using Minikube Tunnel
 
+Alternatively, you can expose the NodePort service using an SSH tunnel directly to the Minikube IP. Follow these steps:
+
+1. **Set Up an SSH Tunnel**  
+  Use the following command to create an SSH tunnel from your local machine to the Minikube IP:
+  ```bash
+  ssh -i private.pem -L 8081:192.168.49.2:30007 ubuntu@54.161.50.57
+  ```
+  **![Image](https://github.com/user-attachments/assets/999c525f-6791-4e51-a4b8-6e8c5a24db54)**
+
+2. **Access the Service Locally**  
+  Open your browser or use `curl` on your local machine to access the service:
+  ```bash
+  curl http://localhost:8081
+  ```
+
+This method allows you to directly access the NodePort service running inside Minikube from your local machine without additional port forwarding steps.
 Browser (local machine)
    ↓
 localhost:8081
