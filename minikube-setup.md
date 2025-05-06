@@ -120,19 +120,69 @@ http://<your-ec2-public-ip>:8001/api/v1/namespaces/kubernetes-dashboard/services
 ```
 **![Image](https://github.com/user-attachments/assets/6d1c8d8e-cfac-43fe-b52f-6ae646e7e3b4)**
 
-### Step 9: Port Forward and Access Application
-1. Get the name of the pods:
-  ```bash
-  kubectl get pods -l app=spring
+### Step 9: Deploy Application with NodePort Service
+
+To deploy an application using a manifest file with a NodePort service and access it in your browser, follow these steps:
+
+1. Create a manifest file (e.g., `nodeport-service.yml`) with the following content:
+  ```yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: my-app
+  spec:
+    replicas: 1
+    selector:
+     matchLabels:
+      app: my-app
+    template:
+     metadata:
+      labels:
+        app: my-app
+     spec:
+      containers:
+      - name: my-app
+        image: nginx
+        ports:
+        - containerPort: 80
+  ---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: my-app-service
+  spec:
+    type: NodePort
+    selector:
+     app: my-app
+    ports:
+    - protocol: TCP
+     port: 80
+     targetPort: 80
+     nodePort: 30007
   ```
-2. Forward the port:
+
+2. Apply the manifest file:
   ```bash
-  kubectl port-forward pod/<pod-name> 8081:8081
+  kubectl apply -f nodeport-service.yml
   ```
-3. Access the application locally:
+
+3. Verify the deployment and service:
   ```bash
-  curl http://localhost:8081
+  kubectl get deployments
+  kubectl get services
   ```
+
+4. Access the application in your browser:
+  - Use the Minikube IP:
+    ```bash
+    minikube ip
+    ```
+  - Open the following URL in your browser:
+    ```
+    http://<minikube-ip>:30007
+    ```
+
+You should see the default Nginx welcome page.
 
 
 
