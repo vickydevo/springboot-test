@@ -1,98 +1,105 @@
 pipeline {
     agent any
+
+    tools {
+        maven 'm3'           // Preconfigured Maven installation in Jenkins
+        jdk 'jdk17'          // Preconfigured JDK 17
+    }
+
+    parameters {
+        string(name: 'image', defaultValue: 'spring-test', description: 'Enter Docker image name')
+        string(name: 'tag', defaultValue: '8081', description: 'Enter Docker image TAG')
+    }
+
+    environment {
+        DOCKER_IMAGE = "${params.image}"
+        DOCKER_TAG = "${params.tag}"
+    }
+
     stages {
-        stage ('GIT CHECKOUT') {
+        stage('SCM Checkout') {
             steps {
-                git url: 'https://github.com/vickydevo/springboot-test.git', branch: 'main'
+                git branch: 'main', url: 'https://github.com/vickydevo/springboot-hello.git'
             }
-        } // stage 1
+        }
 
-        stage ('Quality Gates') {
+        stage('SonarQube Analysis') {
             steps {
-                sh '''
-                mvn clean verify
-                '''
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                        mvn clean verify
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=${DOCKER_IMAGE} \
+                            -Dsonar.projectName=${DOCKER_IMAGE} \
+                            -Dsonar.sources=src/main/java \
+                            -Dsonar.tests=src/test/java \
+                            -Dsonar.java.binaries=target/classes \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    """
+                }
             }
-        } // stage 2
+        }
 
-        stage ('SonarQube Analysis Gates') {
+        stage('OWASP Dependency Check') {
             steps {
-                sh '''
-                mvn clean compile
-                '''
+                dependencyCheck additionalArguments: "--scan ./ --format XML --out dependency-check-report.xml", odcInstallation: 'OWASP-DC'
+                dependencyCheckPublisher pattern: "**/dependency-check-report.xml"
             }
-        } // stage 3
+        }
 
-        stage ('MAVEN BUILD Artifact') {
+        stage('Sonar Quality Gate') {
             steps {
-                sh '''
-                mvn clean package
-                '''
+                timeout(time: 2, unit: "MINUTES") {
+                    waitForQualityGate abortPipeline: true
+                }
             }
-        } // stage 4
+        }
 
-        stage ('Artifact to Nexus Repo') {
+        stage('Trivy File System Scan') {
             steps {
-                sh '''
-                   echo "######################################"
-                    echo "     $(pwd)       "
-                    echo "######################################"
-                mvn clean verify
-                pwd 
-                '''
+                sh "trivy fs --format table -o trivy-fs-report.html ."
             }
-        } // stage 5
+        }
 
-        stage ('DOCKER BUILD') {
+        stage('Docker Image') {
             steps {
-                sh '''
-                docker build -t springboot-demo:v2 .
-                docker tag springboot-demo:v2 vignan91/springboot-demo:v2
-                echo "######################################"
-                echo "     DOCKER TAG IS COMPLETED         "
-                echo "######################################"
-                '''
+                sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
             }
-        } // stage 6
+        }
 
-        stage ('Trivy Scan of Image') {
+        stage('Trivy Image Scan') {
             steps {
-                sh '''
-                mvn clean validate
-                echo "######################################"
-                    echo "     $(pwd)       "
-                    echo "######################################"
-                '''
+                sh "trivy image --format table -o trivy-image-report.html $DOCKER_IMAGE:$DOCKER_TAG"
             }
-        } // stage 7
+        }
 
-        stage ('Image Push to Dockerhub') {
+        stage('DockerHub Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                    echo "######################################"
-                    echo "     DOCKER LOGIN IS COMPLETED       "
-                    echo "######################################"
-                    docker push vignan91/springboot-demo:v2
-                    echo "######################################"
-                    echo "     DOCKER PUSH IS COMPLETED        "
-                    echo "######################################"
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_USER/$DOCKER_IMAGE:$DOCKER_TAG
+                        docker push $DOCKER_USER/$DOCKER_IMAGE:$DOCKER_TAG
                     '''
                 }
             }
-        } // stage 8
+        }
 
-        stage ('Deploy app to Container') {
+        stage('Deploy App to Container') {
             steps {
                 sh '''
-                docker run -d -p 8082:8081 --name demo-container vignan91/springboot-demo:v2
-                echo "######################################"
-                echo "     DOCKER CONTAINER IS RUNNING ON PORT 8081 "
-                echo "######################################"
+                    docker run -d -p 8082:8081 --name demo-container $DOCKER_IMAGE:$DOCKER_TAG
+                    echo "######################################"
+                    echo "DOCKER CONTAINER IS RUNNING ON PORT 8081"
+                    echo "######################################"
                 '''
             }
-        } // stage 9
-    } // stages
-} // pipeline
+        }
+    }
 
+    post {
+        always {
+            archiveArtifacts artifacts: '**/*.html, **/dependency-check-report.xml', allowEmptyArchive: true
+        }
+    }
+}
