@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'akhil'
+        label 'slave1'
     }
 
     tools {
