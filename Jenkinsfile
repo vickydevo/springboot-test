@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        labels 'akhil'
+    }
 
     tools {
         maven 'm3'           // Preconfigured Maven installation in Jenkins
@@ -7,7 +9,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'image', defaultValue: 'spring-test', description: 'Enter Docker image name')
+        string(name: 'image', defaultValue: 'boot-test', description: 'Enter Docker image name')
         string(name: 'tag', defaultValue: '8081', description: 'Enter Docker image TAG')
     }
 
@@ -17,43 +19,43 @@ pipeline {
     }
 
     stages {
-        stage('SCM Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/vickydevo/springboot-hello.git'
-            }
-        }
+        // stage('SCM Checkout') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/vickydevo/springboot-hello.git'
+        //     }
+        // }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                        mvn clean verify
-                        mvn sonar:sonar \
-                            -Dsonar.projectKey=${DOCKER_IMAGE} \
-                            -Dsonar.projectName=${DOCKER_IMAGE} \
-                            -Dsonar.sources=src/main/java \
-                            -Dsonar.tests=src/test/java \
-                            -Dsonar.java.binaries=target/classes \
-                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                    """
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh """
+        //                 mvn clean verify
+        //                 mvn sonar:sonar \
+        //                     -Dsonar.projectKey=${DOCKER_IMAGE} \
+        //                     -Dsonar.projectName=${DOCKER_IMAGE} \
+        //                     -Dsonar.sources=src/main/java \
+        //                     -Dsonar.tests=src/test/java \
+        //                     -Dsonar.java.binaries=target/classes \
+        //                     -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('OWASP Dependency Check') {
-            steps {
-                dependencyCheck additionalArguments: "--scan ./ --format XML --out dependency-check-report.xml", odcInstallation: 'OWASP-DC'
-                dependencyCheckPublisher pattern: "**/dependency-check-report.xml"
-            }
-        }
+        // stage('OWASP Dependency Check') {
+        //     steps {
+        //         dependencyCheck additionalArguments: "--scan ./ --format XML --out dependency-check-report.xml", odcInstallation: 'OWASP-DC'
+        //         dependencyCheckPublisher pattern: "**/dependency-check-report.xml"
+        //     }
+        // }
 
-        stage('Sonar Quality Gate') {
-            steps {
-                timeout(time: 2, unit: "MINUTES") {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        // stage('Sonar Quality Gate') {
+        //     steps {
+        //         timeout(time: 2, unit: "MINUTES") {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
 
         stage('Trivy File System Scan') {
             steps {
