@@ -56,6 +56,22 @@ nohup java -jar gs-spring-boot-0.1.0.jar > output.log 2>&1 &
 # List Java processes:
 ps aux | grep java
 jobs
+# Stop the running application:
+
+- If you started the application as a background job (e.g., with `nohup`):
+
+```bash
+jobs
+kill %1
+```
+
+- Or, if you know the process ID (PID):
+
+```bash
+ps aux | grep java
+kill -9 <PID>
+```
+Replace `<PID>` with the actual process ID shown in the output.
 
 http://public-ip:8080
 http://localhost:8080
