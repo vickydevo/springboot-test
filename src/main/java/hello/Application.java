@@ -1,10 +1,12 @@
 package hello;
 
 import java.util.Arrays;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
 public class Application {
@@ -21,4 +23,11 @@ public class Application {
         }
     }
 
+    /**
+     * Enables the @Timed annotation support for Prometheus metrics.
+     */
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
+    }
 }
