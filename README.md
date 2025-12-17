@@ -1,37 +1,44 @@
-# Deploy JAVA application spring-boot-hello in gitinstance..!!!
+ `README.md` specifically optimized for your **Ubuntu Server** deployment. added the requested comment for Prometheus, and organized it for better readability.
 
-## Pre-requisites:
+---
 
+# Spring Boot Hello - Deployment Guide
 
-- Install GIT
-  ```bash
-  sudo yum install git -y
-  ```
-- Install Maven
+This repository contains a Spring Boot application. Follow the steps below to build and deploy the application on an **Ubuntu 22.04/24.04 LTS** server.
+
+## 1. Pre-requisites
+
+Ensure your system is up to date and the necessary tools are installed.
+
+### Install Git & Maven
+
 ```bash
-sudo yum install maven -y
+sudo apt update
+sudo apt install git maven -y
+
 ```
 
-- Install Java17 amazon linux 
- ```bash
-   java --version
-        yum list installed | grep java
-        sudo yum remove <package-name>
-        sudo yum install java-17-amazon-corretto
-        sudo update-alternatives --config java  # change  java version
+### Install Java 17 (Ubuntu)
+
+Spring Boot 2.6.4 and your configuration require Java 17.
+
+```bash
+# Install OpenJDK 17
+sudo apt install openjdk-17-jdk -y
+
+# Verify the version
+java -version
+
+# If multiple versions exist, set Java 17 as default:
+sudo update-alternatives --config java
+
 ```
-- this is for jenkins integration
-  add GIT Executable PATH in jenkins tools configuration that i.e /usr/bin/git
-- Install Java ubuntu linux
-  ```
-        java -version
-       sudo apt install openjdk-17-jre-headless
-        sudo apt remove <openjdk-8-jre-headless>
-        update-java-alternatives --list
-        sudo update-alternatives --config java
 
+> **Jenkins Note:** If integrating with Jenkins, set the Git executable path to `/usr/bin/git` in the Global Tool Configuration.
 
-## Clone code from github:
+---
+
+## 2. Clone the Repository
 
 ```bash
 git clone https://github.com/vickydevo/springboot-hello.git
@@ -39,46 +46,70 @@ cd springboot-hello
 
 ```
 
-## Build Maven Artifact:  below cmd can be done only when pom.xml is present
+---
+
+## 3. Build the Application
+
+Use Maven to compile the code and package it into an executable JAR file.
 
 ```bash
 mvn clean install
+
 ```
 
-## Deploy springboot application:
+---
+
+## 4. Deploy & Manage the Application
+
+### Start the Application (Foreground)
+
+Use this for testing to see logs in real-time:
 
 ```bash
 cd target
 java -jar gs-spring-boot-0.1.0.jar
 
-# Run the application using nohup and &:
-nohup java -jar gs-spring-boot-0.1.0.jar > output.log 2>&1 &
-# List Java processes:
-ps aux | grep java
-jobs
-# Stop the running application:
+```
 
-- If you started the application as a background job (e.g., with `nohup`):
+### Start the Application (Background)
+
+Use `nohup` to keep the application running after you close the terminal session:
 
 ```bash
-jobs
-kill %1
+nohup java -jar gs-spring-boot-0.1.0.jar > app_output.log 2>&1 &
+
 ```
 
-- Or, if you know the process ID (PID):
+### Useful Management Commands
 
-```bash
-ps aux | grep java
-kill -9 <PID>
-```
-Replace `<PID>` with the actual process ID shown in the output.
+| Action | Command |
+| --- | --- |
+| **Check if running** | `ps aux | grep java` |
+| **View logs** | `tail -f app_output.log` |
+| **Stop by Job ID** | `jobs` then `kill %1` |
+| **Stop by Process ID** | `kill -9 <PID>` |
 
-http://public-ip:8080
-http://localhost:8080
-```
+---
 
-## If you want to run ```Dockerfile-with-ARG-ENV file```
+## 5. Accessing the Application
 
-```bash
-docker build -t springboothello:v1 -f Dockerfile-with-ARG-ENV . --build-arg version=0.1.0
-```
+Once started, the application is accessible at the following endpoints:
+
+* **Home Page:** `http://<YOUR_PUBLIC_IP>:8081`
+* **Actuator Health:** `http://<YOUR_PUBLIC_IP>:8081/actuator/health`
+* **Prometheus Metrics:** `http://<YOUR_PUBLIC_IP>:8081/actuator/prometheus`
+> **Note:** This endpoint exposes internal application metrics (JVM memory, CPU, request counts) in a format that a **Prometheus Server** can scrape for monitoring and dashboarding (e.g., in Grafana).
+
+
+
+---
+
+### Network Troubleshooting
+
+If you cannot access the URLs above, ensure your **AWS Security Group** has an **Inbound Rule** configured:
+
+* **Type:** Custom TCP
+* **Port Range:** `8081`
+* **Source:** `0.0.0.0/0` (or your specific IP)
+
+Would you like me to help you create a **Systemd Service** file so that your application automatically restarts if the Ubuntu server reboots?
