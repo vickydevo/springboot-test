@@ -1,48 +1,46 @@
-# For ec2 instance
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-deployment-np
+  name: springboot-deployment
   labels:
-    app: spring-np
+    app: spring
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: spring-np
+      app: spring
   template:
     metadata:
       labels:
-        app: spring-np
+        app: spring
+      annotations:
+        # These allow Prometheus to automatically find your metrics
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8081"
     spec:
       containers:
       - name: springboot
         image: vignan91/spring-test:12-Nov
         ports:
         - containerPort: 8081
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"      
-          limits:
-             memory: "512Mi"
-             cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-svc-np
+  name: spring-service
   labels:
-    app: spring-np
+    app: spring
 spec:
+  # Changed from ClusterIP to NodePort for external access
   type: NodePort
   selector:
-    app: spring-np
+    app: spring
   ports:
     - protocol: TCP
-      port: 8082        # Updated service port
-      targetPort: 8081  # Container port remains the same
-      nodePort: 30037 # Optional, specify a port in the 30000-32767 range 
+      port: 8081
+      targetPort: 8081
+      nodePort: 30001 # You can access this via http://<EC2-IP>:30001
 
 
 # for Wsl
