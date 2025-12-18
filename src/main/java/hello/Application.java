@@ -8,12 +8,18 @@ import org.springframework.context.annotation.Bean;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 
-@SpringBootApplication
+/**
+ * Main Application class.
+ * scanBasePackages ensures Spring finds both HelloController (hello) 
+ * and ChaosController (com.vickydevo.hello).
+ */
+@SpringBootApplication(scanBasePackages = {"hello", "com.vickydevo.hello"})
 public class Application {
-    
+
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
         
+        // Useful for your offline session to show developers what Beans were loaded
         System.out.println("Let's inspect the beans provided by Spring Boot:");
         
         String[] beanNames = ctx.getBeanDefinitionNames();
@@ -25,6 +31,7 @@ public class Application {
 
     /**
      * Enables the @Timed annotation support for Prometheus metrics.
+     * Without this Bean, the @Timed annotations in your Controllers won't report data.
      */
     @Bean
     public TimedAspect timedAspect(MeterRegistry registry) {
