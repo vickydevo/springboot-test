@@ -98,6 +98,12 @@ Once started, the application is accessible at the following endpoints:
 * **Home Page:** `http://<YOUR_PUBLIC_IP>:8081`
 * **Actuator Health:** `http://<YOUR_PUBLIC_IP>:8081/actuator/health`
 * **Prometheus Metrics:** `http://<YOUR_PUBLIC_IP>:8081/actuator/prometheus`  Look for your custom chaos metrics: chaos_errors_seconds_count and chaos_leak_seconds_count
+*  http://54.87.142.250:8081/chaos/leak
+<img width="623" height="213" alt="Image" src="https://github.com/user-attachments/assets/f04c628e-174f-4e21-821f-ba2840a58a4c" />
+* http://54.87.142.250:8081/chaos/error
+<img width="986" height="392" alt="Image" src="https://github.com/user-attachments/assets/91f5c6c2-cc2e-411c-b441-2102f4549d71" />
+
+
 > **Note:** This endpoint exposes internal application metrics (JVM memory, CPU, request counts) in a format that a **Prometheus Server** can scrape for monitoring and dashboarding (e.g., in Grafana).
 
 
